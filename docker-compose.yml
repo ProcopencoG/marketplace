@@ -1,0 +1,62 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: piataonline_db
+    environment:
+      POSTGRES_DB: piataonline
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - piataonline_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # .NET API
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: piataonline_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=piataonline;Username=postgres;Password=postgres
+      - JwtSettings__Secret=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      - GoogleOAuth__ClientId=${GOOGLE_CLIENT_ID}
+      - GoogleOAuth__ClientSecret=${GOOGLE_CLIENT_SECRET}
+    ports:
+      - "5000:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - piataonline_network
+
+  # React Frontend (Vite)
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: piataonline_web
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - piataonline_network
+
+volumes:
+  postgres_data:
+
+networks:
+  piataonline_network:
+    driver: bridge

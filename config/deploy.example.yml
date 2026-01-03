@@ -1,0 +1,41 @@
+service: piata_online
+image: piata_online
+
+# Proxy Configuration
+proxy:
+  host: piataonline.bio
+  ssl: true
+  healthcheck:
+    path: /health
+    interval: 5
+
+servers:
+  web:
+    hosts:
+      - YOUR_SERVER_IP
+
+# Registry Configuration
+registry:
+  server: YOUR_REGISTRY.azurecr.io
+  username: YOUR_REGISTRY_USERNAME
+  password: <%= ENV["KAMAL_REGISTRY_PASSWORD"] %>
+
+# Environment Variables
+env:
+  clear:
+    ASPNETCORE_URLS: http://+:80
+    ASPNETCORE_ENVIRONMENT: Production
+    DATABASE_URL: Host=YOUR_DB_HOST;Database=YOUR_DB;Username=YOUR_USER;Password=YOUR_PASSWORD;Port=5432;
+    JWT_SECRET: YOUR_JWT_SECRET_MINIMUM_32_CHARACTERS
+    Google__ClientId: YOUR_GOOGLE_CLIENT_ID
+    Google__ClientSecret: YOUR_GOOGLE_CLIENT_SECRET
+
+# Build Configuration
+builder:
+  arch: amd64
+  remote: ssh://YOUR_USER@YOUR_SERVER_IP
+
+# SSH Configuration
+ssh:
+  user: YOUR_SSH_USER
+  keys: ["your-key.pem"]

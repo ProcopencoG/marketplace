@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fern: #4a7c59;
+  --color-marigold: #f9a620;
+  --color-terracotta: #b7472a;
+  --color-cream: #f5f3ed;
+  
+  --font-serif: Merriweather, serif;
+  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-stone-800 font-sans;
+    overscroll-behavior-y: none;
+  }
+  
+  /* Global Selection Rules */
+  /* Global Selection Disabled */
+  *, *::before, *::after {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Allow text entry and selection within inputs */
+  input, textarea, [contenteditable], .selectable {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Force pointer cursor on all clickable elements */
+  button, .button, [role="button"], a, input[type="submit"], input[type="button"], input[type="reset"], select {
+    cursor: pointer !important;
+  }
+}
+
+@keyframes float-1 {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(200px, 150px) rotate(45deg) scale(1.1); }
+  50% { transform: translate(-150px, 200px) rotate(90deg) scale(0.9); }
+  75% { transform: translate(-200px, -100px) rotate(135deg) scale(1.05); }
+  100% { transform: translate(0, 0) rotate(180deg) scale(1); }
+}
+
+@keyframes float-2 {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(-250px, 150px) rotate(-60deg) scale(1.2); }
+  66% { transform: translate(150px, -200px) rotate(-120deg) scale(0.85); }
+  100% { transform: translate(0, 0) rotate(-180deg) scale(1); }
+}
+
+@keyframes float-3 {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(150px, -200px) rotate(30deg) scale(0.9); }
+  50% { transform: translate(-200px, -150px) rotate(-30deg) scale(1.1); }
+  75% { transform: translate(-100px, 250px) rotate(60deg) scale(0.95); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+.animate-float-1 {
+  animation: float-1 29s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 37s ease-in-out infinite;
+}
+
+.animate-float-3 {
+  animation: float-3 43s ease-in-out infinite;
+}

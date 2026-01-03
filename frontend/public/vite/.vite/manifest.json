@@ -1,0 +1,25 @@
+{
+  "entrypoints/application.jsx": {
+    "file": "assets/application-BUH78Xbt.js",
+    "name": "entrypoints\\application.jsx",
+    "src": "entrypoints/application.jsx",
+    "isEntry": true,
+    "css": [
+      "assets/application-wnkReV9c.css"
+    ]
+  },
+  "entrypoints/prevent-overscroll.js": {
+    "file": "assets/prevent-overscroll-CZPlz_wM.js",
+    "name": "entrypoints\\prevent-overscroll.js",
+    "src": "entrypoints/prevent-overscroll.js",
+    "isEntry": true
+  },
+  "logo-white.png": {
+    "file": "assets/logo-white-CYnz0WHA.png",
+    "src": "logo-white.png"
+  },
+  "logo.png": {
+    "file": "assets/logo-Mc9Ns80i.png",
+    "src": "logo.png"
+  }
+}

@@ -1,0 +1,65 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ============ SENSITIVE FILES - DO NOT COMMIT ============
+# Environment files with secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# .NET launchSettings with secrets (use launchSettings.example.json instead)
+**/Properties/launchSettings.json
+
+# Kamal deploy config with production secrets
+config/deploy.yml
+
+# Private keys
+*.pem
+*.key
+piata-server_key.pem
+
+# Deploy scripts with secrets
+deploy.ps1
+deploy_dotnet.ps1
+
+# Large video files (use YouTube instead)
+*.mp4
+
+# Internal prompts and docs (not for public)
+*_prompt.md
+*_skill.md
+first_prompt.md
+backend_prompt.md
+backend_skill.md
+
+# .NET build artifacts
+**/bin/
+**/obj/
+
+# User secrets
+secrets.json
