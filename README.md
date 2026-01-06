@@ -8,6 +8,8 @@ A peer-to-peer marketplace platform connecting Romanian farmers and local produc
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-316192?logo=postgresql)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ProcopencoG_marketplace&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ProcopencoG_marketplace)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/quality_gate?project=ProcopencoG_marketplace)](https://sonarcloud.io/summary/new_code?id=ProcopencoG_marketplace)
 
 ## 🎬 Demo
 
