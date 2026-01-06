@@ -1,10 +1,10 @@
 # 🥕 PiataOnline - Digital Farmers Market
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/quality_gate?project=ProcopencoG_marketplace)](https://sonarcloud.io/summary/new_code?id=ProcopencoG_marketplace)
 
 A peer-to-peer marketplace platform connecting Romanian farmers and local producers directly with consumers. Think "digital farmers market" where anyone can create their own stand to sell homemade, organic, and locally-produced food products.
 
 
 **Live at:** [https://piataonline.bio](https://piataonline.bio)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/quality_gate?project=ProcopencoG_marketplace)](https://sonarcloud.io/summary/new_code?id=ProcopencoG_marketplace)
 
 
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)
