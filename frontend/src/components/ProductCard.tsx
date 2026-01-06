@@ -1,20 +1,17 @@
 import type { Product } from '../types';
 import { Button } from './ui/button';
 import { Plus, Star } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { ShoppingCart } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import { cn } from '../lib/utils';
-import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 interface ProductCardProps {
-  product: Product;
+  readonly product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem, clearCart } = useCart();
-  const { user, login } = useAuth();
   
   const handleAdd = async () => {
     const result = await addItem(product, 1);
@@ -64,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
         ) : (
           <div className="w-full h-48 flex items-center justify-center text-stone-300">No Image</div>
         )}
-        {product.stockType === 'limited' && product.stockQuantity && (
+        {product.stockType === 'limited' && Boolean(product.stockQuantity) && (
             <span className="absolute top-2 right-2 bg-marigold text-white text-xs font-bold px-2 py-1 rounded-full">
                 Stoc limitat: {product.stockQuantity}
             </span>
@@ -79,7 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="p-4 flex-grow flex flex-col">
         <div className="flex justify-between items-start mb-1">
             <span className="text-xs font-bold text-fern uppercase tracking-wide">{product.category}</span>
-            {product.rating && product.rating > 0 && (
+            {product.rating !== undefined && product.rating > 0 && (
                 <div className="flex items-center text-marigold text-xs font-bold">
                     <Star className="h-3 w-3 fill-current mr-0.5" />
                     {product.rating}

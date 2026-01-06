@@ -1,12 +1,11 @@
 import { Navbar } from '../components/Navbar';
-import { Ghost } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { InstallPrompt } from '../components/InstallPrompt';
 
 import { Footer } from '../components/Footer';
 
-export function RootLayout({ children }: { children: React.ReactNode }) {
+export function RootLayout({ children }: { readonly children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-cream text-stone-800">
       <Navbar />

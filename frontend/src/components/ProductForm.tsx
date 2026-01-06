@@ -4,9 +4,9 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 interface ProductFormProps {
-  product?: any;
-  onClose: () => void;
-  stallId: number | string;
+  readonly product?: any;
+  readonly onClose: () => void;
+  readonly stallId: number | string;
 }
 
 export function ProductForm({ product, onClose, stallId }: ProductFormProps) {
@@ -73,36 +73,36 @@ export function ProductForm({ product, onClose, stallId }: ProductFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700">Nume Produs</label>
-          <input type="text" name="name" value={values.name} onChange={handleChange} required className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
+          <label htmlFor="product-name" className="block text-sm font-medium text-stone-700">Nume Produs</label>
+          <input type="text" id="product-name" name="name" value={values.name} onChange={handleChange} required className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-700">Categorie</label>
-          <select name="category" value={values.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern">
+          <label htmlFor="product-category" className="block text-sm font-medium text-stone-700">Categorie</label>
+          <select id="product-category" name="category" value={values.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern">
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-stone-700">Descriere</label>
-        <textarea name="description" value={values.description} onChange={handleChange} required rows={3} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
+        <label htmlFor="product-description" className="block text-sm font-medium text-stone-700">Descriere</label>
+        <textarea id="product-description" name="description" value={values.description} onChange={handleChange} required rows={3} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700">Preț (RON)</label>
-          <input type="number" step="0.01" name="price" value={values.price} onChange={handleChange} required className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
+          <label htmlFor="product-price" className="block text-sm font-medium text-stone-700">Preț (RON)</label>
+          <input type="number" step="0.01" id="product-price" name="price" value={values.price} onChange={handleChange} required className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-700">Unitate</label>
-          <select name="unit" value={values.unit} onChange={handleChange} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern">
+          <label htmlFor="product-unit" className="block text-sm font-medium text-stone-700">Unitate</label>
+          <select id="product-unit" name="unit" value={values.unit} onChange={handleChange} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern">
             {units.map(u => <option key={u} value={u}>{u}</option>)}
           </select>
         </div>
         <div>
-           <label className="block text-sm font-medium text-stone-700">Stoc</label>
-           <select name="stockType" value={values.stockType} onChange={handleChange} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern">
+           <label htmlFor="product-stockType" className="block text-sm font-medium text-stone-700">Stoc</label>
+           <select id="product-stockType" name="stockType" value={values.stockType} onChange={handleChange} className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern">
              {stockTypes.map(st => <option key={st.value} value={st.value}>{st.label}</option>)}
            </select>
         </div>
@@ -110,14 +110,14 @@ export function ProductForm({ product, onClose, stallId }: ProductFormProps) {
 
       {values.stockType === 'limited' && (
         <div>
-           <label className="block text-sm font-medium text-stone-700">Cantitate în Stoc</label>
-           <input type="number" name="stockQuantity" value={values.stockQuantity} onChange={handleChange} required className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
+           <label htmlFor="product-stockQuantity" className="block text-sm font-medium text-stone-700">Cantitate în Stoc</label>
+           <input type="number" id="product-stockQuantity" name="stockQuantity" value={values.stockQuantity} onChange={handleChange} required className="mt-1 block w-full rounded-md border-stone-300 shadow-sm focus:border-fern focus:ring-fern" />
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-stone-700">Imagine Produs</label>
-        <input type="file" onChange={(e) => setImage(e.target.files?.[0] || null)} className="mt-1 block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-fern/10 file:text-fern hover:file:bg-fern/20" />
+        <label htmlFor="product-image" className="block text-sm font-medium text-stone-700">Imagine Produs</label>
+        <input type="file" id="product-image" onChange={(e) => setImage(e.target.files?.[0] || null)} className="mt-1 block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-fern/10 file:text-fern hover:file:bg-fern/20" />
       </div>
 
       <div className="flex justify-end gap-3 pt-4">

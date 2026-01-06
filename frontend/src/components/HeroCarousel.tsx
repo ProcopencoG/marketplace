@@ -4,16 +4,19 @@ import { Button } from './ui/button';
 
 const images = [
   {
+    id: 'hero-1',
     url: '/market_hero_1.png',
     title: 'Gustul autentic, direct de la sursă',
     description: 'Piața Online aduce producătorii locali mai aproape de tine. Descoperă tarabele digitale și comandă produse proaspete.'
   },
   {
+    id: 'hero-2',
     url: '/market_hero_2.png',
     title: 'Tradiție în fiecare felie',
     description: 'Descoperă brânzeturi și produse lactate preparate după rețete străvechi, fără aditivi sau conservanți.'
   },
   {
+    id: 'hero-3',
     url: '/market_hero_3.png',
     title: 'Bunătățile cămării românești',
     description: 'De la miere aurie la pâine caldă, găsește tot ce ai nevoie pentru o masă sănătoasă și gustoasă.'
@@ -37,7 +40,7 @@ export function HeroCarousel() {
     <div className="relative w-full h-[500px] overflow-hidden rounded-2xl mb-12 shadow-xl border-4 border-white">
       {images.map((img, idx) => (
         <div
-          key={idx}
+          key={img.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             idx === current ? 'opacity-100' : 'opacity-0'
           }`}
@@ -73,9 +76,9 @@ export function HeroCarousel() {
       </button>
 
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-        {images.map((_, idx) => (
+        {images.map((img, idx) => (
           <button
-            key={idx}
+            key={img.id}
             onClick={() => setCurrent(idx)}
             className={`w-3 h-3 rounded-full transition-all border border-white/50 ${
               idx === current ? 'bg-marigold w-8' : 'bg-white/30'

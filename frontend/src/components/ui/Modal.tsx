@@ -3,11 +3,11 @@ import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
-  className?: string;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly title: string;
+  readonly children: React.ReactNode;
+  readonly className?: string;
 }
 
 export function Modal({ isOpen, onClose, title, children, className }: ModalProps) {

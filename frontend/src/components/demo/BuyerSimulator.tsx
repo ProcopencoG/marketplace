@@ -7,8 +7,6 @@ import {
   User, 
   Search,
   MapPin,
-  Plus,
-  Minus,
   CreditCard,
   QrCode
 } from 'lucide-react';
@@ -26,7 +24,6 @@ export function BuyerSimulator() {
   const [orderPickedUp, setOrderPickedUp] = useState(false);
   const [chatMessageSent, setChatMessageSent] = useState(false);
   const [chatInput, setChatInput] = useState("Ajung în 10 minute");
-  const [resetKey, setResetKey] = useState(0);
 
   const steps = [
     { title: "Autentificare", icon: <User className="w-4 h-4" /> },
@@ -57,7 +54,6 @@ export function BuyerSimulator() {
     setChatMessageSent(false);
     setStallSelected(false);
     setChatInput("Ajung în 10 minute");
-    setResetKey(prev => prev + 1);
   };
 
   return (
@@ -71,7 +67,7 @@ export function BuyerSimulator() {
        <div className="flex items-center justify-center gap-2 mb-8 px-2">
           {steps.map((step, index) => (
              <button 
-               key={index}
+               key={step.title}
                onClick={() => setActiveStep(index)}
                className={cn(
                  "flex items-center justify-center rounded-full transition-all duration-300 border-2",
@@ -156,7 +152,7 @@ export function BuyerSimulator() {
                    {/* Step 2: Explore & Add to Cart */}
                    {activeStep === 1 && (
                        <div className="animate-in slide-in-from-right duration-300 h-full flex flex-col p-4">
-                           {!stallSelected ? (
+                            {!stallSelected ? (
                                <>
                                    <div className="relative mb-6">
                                        <Search className="absolute left-4 top-3.5 w-4 h-4 text-stone-400" />
@@ -166,7 +162,11 @@ export function BuyerSimulator() {
                                        <h3 className="font-bold text-lg">Tarabe în Apropiere</h3>
                                        <span className="text-fern text-xs font-bold">Vezi tot</span>
                                    </div>
-                                   <div onClick={() => setStallSelected(true)} className="bg-white p-4 rounded-2xl shadow-sm mb-4 cursor-pointer hover:bg-stone-50 transition-colors active:scale-95">
+                                   <button 
+                                     type="button"
+                                     onClick={() => setStallSelected(true)} 
+                                     className="bg-white p-4 rounded-2xl shadow-sm mb-4 cursor-pointer hover:bg-stone-50 transition-colors active:scale-95 w-full text-left"
+                                   >
                                        <div className="flex gap-4">
                                            <div className="w-14 h-14 bg-stone-200 rounded-xl flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=150&q=80)' }}></div>
                                            <div>
@@ -180,7 +180,7 @@ export function BuyerSimulator() {
                                                </div>
                                            </div>
                                        </div>
-                                   </div>
+                                   </button>
                                    <div className="bg-white p-4 rounded-2xl shadow-sm mb-4 opacity-50">
                                        <div className="flex gap-4">
                                            <div className="w-14 h-14 bg-stone-200 rounded-xl flex-shrink-0"></div>
@@ -245,7 +245,7 @@ export function BuyerSimulator() {
                    {/* Step 3: Checkout & Order */}
                    {activeStep === 2 && (
                        <div className="animate-in slide-in-from-right duration-300 h-full flex flex-col p-4">
-                           {!orderPlaced ? (
+                            {!orderPlaced ? (
                                <div className="flex flex-col h-full">
                                     <h3 className="font-bold text-lg mb-6">Sumar Comandă</h3>
                                     <div className="bg-white p-5 rounded-2xl shadow-sm mb-6 flex-grow">
@@ -377,7 +377,7 @@ export function BuyerSimulator() {
                 <div className="absolute bottom-6 left-4 right-4 h-12 bg-white/90 backdrop-blur-md rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-stone-200/50 flex items-center justify-between px-4 z-40">
                    <div className="text-[10px] text-stone-400">AA</div>
                    <div className="flex items-center gap-1 text-[11px] font-medium text-black">
-                       <span className="w-2.5 h-3 rounded-[1px] border border-black flex items-center justify-center overflow-hidden"><span className="w-full h-[1px] bg-black -rotate-45"></span></span>
+                       <span className="w-2.5 h-3 rounded-[1px] border border-black flex items-center justify-center overflow-hidden"><span className="w-full h-[1px] bg-black -rotate-45"></span></span>{' '}
                        piata-online.ro
                    </div>
                    <div className="w-4 h-4 rounded-full border border-stone-400"></div>

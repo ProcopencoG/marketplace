@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
-import { MapPin, Star, Search } from 'lucide-react';
+import { Star, Search } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Carousel } from '../components/Carousel';
 import { useState, useEffect } from 'react';
@@ -17,7 +17,6 @@ export default function HomePage() {
   
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
-  // const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || ''); // Category not yet supported by API?
 
   useEffect(() => {
     const fetchStalls = async () => {

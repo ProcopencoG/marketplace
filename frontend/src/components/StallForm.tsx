@@ -4,8 +4,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 interface StallFormProps {
-  stall: any;
-  onClose: () => void;
+  readonly stall: any;
+  readonly onClose: () => void;
 }
 
 const ROMANIAN_CITIES = [
@@ -83,9 +83,10 @@ export function StallForm({ stall, onClose }: StallFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-stone-700">Nume Tarabă</label>
+        <label htmlFor="stall-name" className="block text-sm font-medium text-stone-700">Nume Tarabă</label>
         <input 
           type="text" 
+          id="stall-name"
           name="name" 
           value={values.name} 
           onChange={handleChange} 
@@ -96,8 +97,9 @@ export function StallForm({ stall, onClose }: StallFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-stone-700">Descriere</label>
+        <label htmlFor="stall-description" className="block text-sm font-medium text-stone-700">Descriere</label>
         <textarea 
+          id="stall-description"
           name="description" 
           value={values.description} 
           onChange={handleChange} 
@@ -111,8 +113,9 @@ export function StallForm({ stall, onClose }: StallFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-stone-700">Locație</label>
+        <label htmlFor="stall-location" className="block text-sm font-medium text-stone-700">Locație</label>
         <select 
+          id="stall-location"
           name="location" 
           value={values.location} 
           onChange={handleChange} 
@@ -128,18 +131,20 @@ export function StallForm({ stall, onClose }: StallFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700">Logo Tarabă (Max 3MB)</label>
+          <label htmlFor="stall-logo" className="block text-sm font-medium text-stone-700">Logo Tarabă (Max 3MB)</label>
           <input 
             type="file" 
+            id="stall-logo"
             accept="image/*"
             onChange={(e) => setLogo(e.target.files?.[0] || null)}
             className="mt-1 block w-full text-xs text-stone-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-fern/10 file:text-fern hover:file:bg-fern/20" 
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-stone-700">Copertă (Max 5MB)</label>
+          <label htmlFor="stall-cover" className="block text-sm font-medium text-stone-700">Copertă (Max 5MB)</label>
           <input 
             type="file" 
+            id="stall-cover"
             accept="image/*"
             onChange={(e) => setCover(e.target.files?.[0] || null)}
             className="mt-1 block w-full text-xs text-stone-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-fern/10 file:text-fern hover:file:bg-fern/20" 

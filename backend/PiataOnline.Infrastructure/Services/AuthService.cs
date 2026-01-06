@@ -45,51 +45,64 @@ public class AuthService : IAuthService
         {
             if (provider.ToLower() == "google")
             {
-                // Validate Access Token via UserInfo endpoint
-                var response = await _httpClient.GetAsync($"https://www.googleapis.com/oauth2/v3/userinfo?access_token={idToken}");
-                if (response.IsSuccessStatusCode)
+                GoogleUserInfo? userInfo = null;
+                
+                // Try ID Token validation first (for Google One Tap / GoogleLogin component)
+                // ID Tokens are JWTs that can be validated via tokeninfo endpoint
+                var idTokenResponse = await _httpClient.GetAsync($"https://oauth2.googleapis.com/tokeninfo?id_token={idToken}");
+                if (idTokenResponse.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var userInfo = System.Text.Json.JsonSerializer.Deserialize<GoogleUserInfo>(content);
-                    
-                    if (userInfo != null)
+                    var idTokenContent = await idTokenResponse.Content.ReadAsStringAsync();
+                    userInfo = System.Text.Json.JsonSerializer.Deserialize<GoogleUserInfo>(idTokenContent);
+                }
+                else
+                {
+                    // Fallback: Try Access Token validation (for useGoogleLogin hook)
+                    var accessTokenResponse = await _httpClient.GetAsync($"https://www.googleapis.com/oauth2/v3/userinfo?access_token={idToken}");
+                    if (accessTokenResponse.IsSuccessStatusCode)
                     {
-                         // Read owner email from config (not hardcoded)
-                         var ownerEmail = _configuration.GetValue<string>("JwtSettings:OwnerEmail") ?? "";
-                         
-                         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == userInfo.email);
-                         if (existingUser != null) 
-                         {
-                             // Auto-promote owner if configured
-                             if (!string.IsNullOrEmpty(ownerEmail) && 
-                                 userInfo.email.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase) && 
-                                 !existingUser.IsAdmin)
-                             {
-                                 existingUser.IsAdmin = true;
-                                 await _context.SaveChangesAsync();
-                             }
-                             return existingUser;
-                         }
-
-                         var isAdmin = !string.IsNullOrEmpty(ownerEmail) && 
-                             userInfo.email.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase);
-
-                         var newUser = new User
-                         {
-                             Name = userInfo.name,
-                             Email = userInfo.email,
-                             Provider = "google",
-                             Uid = userInfo.sub, // Google ID
-                             AvatarUrl = userInfo.picture,
-                             IsAdmin = isAdmin,
-                             CreatedAt = DateTime.UtcNow,
-                             UpdatedAt = DateTime.UtcNow
-                         };
-
-                         await _context.Users.AddAsync(newUser);
-                         await _context.SaveChangesAsync();
-                         return newUser;
+                        var accessTokenContent = await accessTokenResponse.Content.ReadAsStringAsync();
+                        userInfo = System.Text.Json.JsonSerializer.Deserialize<GoogleUserInfo>(accessTokenContent);
                     }
+                }
+                
+                if (userInfo != null && !string.IsNullOrEmpty(userInfo.email))
+                {
+                     // Read owner email from config (not hardcoded)
+                     var ownerEmail = _configuration.GetValue<string>("JwtSettings:OwnerEmail") ?? "";
+                     
+                     var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == userInfo.email);
+                     if (existingUser != null) 
+                     {
+                         // Auto-promote owner if configured
+                         if (!string.IsNullOrEmpty(ownerEmail) && 
+                             userInfo.email.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase) && 
+                             !existingUser.IsAdmin)
+                         {
+                             existingUser.IsAdmin = true;
+                             await _context.SaveChangesAsync();
+                         }
+                         return existingUser;
+                     }
+
+                     var isAdmin = !string.IsNullOrEmpty(ownerEmail) && 
+                         userInfo.email.Equals(ownerEmail, StringComparison.OrdinalIgnoreCase);
+
+                     var newUser = new User
+                     {
+                         Name = userInfo.name ?? userInfo.email.Split('@')[0],
+                         Email = userInfo.email,
+                         Provider = "google",
+                         Uid = userInfo.sub ?? userInfo.email, // Google ID or email as fallback
+                         AvatarUrl = userInfo.picture,
+                         IsAdmin = isAdmin,
+                         CreatedAt = DateTime.UtcNow,
+                         UpdatedAt = DateTime.UtcNow
+                     };
+
+                     await _context.Users.AddAsync(newUser);
+                     await _context.SaveChangesAsync();
+                     return newUser;
                 }
             }
             else if (provider.ToLower() == "facebook")

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useMemo } from 'react';
 import type { User } from '../types';
 
 interface AuthContextType {
@@ -16,7 +16,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 
 // ... interface AuthContextType kept for compatibility ...
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const { user, login, logout, initialize, isAuthenticated, isLoading } = useAuthStore();
   
   useEffect(() => {
@@ -29,8 +29,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginDev = () => login('google', 'dev-test-token');
 
+  const contextValue = useMemo(() => ({
+    user,
+    login: loginDev,
+    loginWithGoogle,
+    logout,
+    isAuthenticated,
+    isLoading
+  }), [user, loginDev, loginWithGoogle, logout, isAuthenticated, isLoading]);
+
   return (
-    <AuthContext.Provider value={{ user, login: loginDev, loginWithGoogle, logout, isAuthenticated, isLoading }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

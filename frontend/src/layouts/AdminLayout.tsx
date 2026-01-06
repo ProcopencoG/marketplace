@@ -2,27 +2,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, Store, ShoppingBag, LogOut, Menu, X, Home, FileText, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
-
-function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { user, logout, isLoading } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  useEffect(() => {
-     if (!isLoading) {
-         if (!user || !user.isAdmin) {
-             navigate('/');
-         }
-     }
-  }, [user, isLoading, navigate]);
-
-  if (isLoading) return <div className="h-screen flex items-center justify-center bg-stone-50 text-stone-500">Se încarcă...</div>;
-  if (!user || !user.isAdmin) return null; // Wait for redirect
-
-  const isActive = (path: string) => location.pathname.startsWith(path);
-
-  const NavLinks = () => (
+// NavLinks component moved outside to avoid recreating on each render
+function NavLinks({ 
+  isActive, 
+  setMobileMenuOpen 
+}: { 
+  readonly isActive: (path: string) => boolean; 
+  readonly setMobileMenuOpen: (open: boolean) => void;
+}) {
+  return (
     <>
        <Link 
          to="/admin/dashboard" 
@@ -68,26 +56,36 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
          <FileText className="h-4 w-4 mr-3" />
          System Logs
        </Link>
-
-       {(user?.email === "gabrielprocopenco@gmail.com") && (
-          <Link 
-            to="/admin/admins" 
-            className={`flex items-center px-4 py-2.5 rounded-lg transition-colors ${isActive('/admin/admins') ? 'bg-fern text-white font-medium' : 'hover:bg-amber-900/40 text-amber-200 hover:text-white'}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <Shield className="h-4 w-4 mr-3" />
-            Gestionare Admini
-          </Link>
-       )}
     </>
   );
+}
+
+function AdminLayoutContent({ children }: { readonly children: React.ReactNode }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout, isLoading } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  useEffect(() => {
+     if (!isLoading) {
+         if (!user?.isAdmin) {
+             navigate('/');
+         }
+     }
+  }, [user, isLoading, navigate]);
+
+  if (isLoading) return <div className="h-screen flex items-center justify-center bg-stone-50 text-stone-500">Se încarcă...</div>;
+  if (!user?.isAdmin) return null; // Wait for redirect
+
+  const isActive = (path: string) => location.pathname.startsWith(path);
+
 
   return (
     <div className="min-h-screen bg-stone-50 flex">
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
-          <div className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}></div>
+          <button type="button" className="fixed inset-0 bg-stone-900/80 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" />
           <aside className="relative flex-1 flex flex-col max-w-xs w-full bg-stone-900 text-stone-300 shadow-xl">
              <div className="p-6 border-b border-stone-800 flex justify-between items-center">
                  <Link to="/" className="font-serif text-xl font-bold text-white flex items-center">
@@ -111,7 +109,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                     <Home className="h-4 w-4 mr-3" />
                     Înapoi la Piață
                 </Link>
-                <NavLinks />
+                <NavLinks isActive={isActive} setMobileMenuOpen={setMobileMenuOpen} />
+              {(user?.email === "gabrielprocopenco@gmail.com") && (
+                 <Link 
+                   to="/admin/admins" 
+                   className={`flex items-center px-4 py-2.5 rounded-lg transition-colors ${isActive('/admin/admins') ? 'bg-fern text-white font-medium' : 'hover:bg-amber-900/40 text-amber-200 hover:text-white'}`}
+                   onClick={() => setMobileMenuOpen(false)}
+                 >
+                   <Shield className="h-4 w-4 mr-3" />
+                   Gestionare Admini
+                 </Link>
+              )}
              </nav>
              
              <div className="p-4 border-t border-stone-800">
@@ -144,7 +152,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 <Home className="h-4 w-4 mr-3" />
                 Înapoi la Piață
             </Link>
-           <NavLinks />
+           <NavLinks isActive={isActive} setMobileMenuOpen={setMobileMenuOpen} />
+           {(user?.email === "gabrielprocopenco@gmail.com") && (
+              <Link 
+                to="/admin/admins" 
+                className={`flex items-center px-4 py-2.5 rounded-lg transition-colors ${isActive('/admin/admins') ? 'bg-fern text-white font-medium' : 'hover:bg-amber-900/40 text-amber-200 hover:text-white'}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Shield className="h-4 w-4 mr-3" />
+                Gestionare Admini
+              </Link>
+           )}
            {/* Add spacer or logic if needed, but NavLinks handles main items */}
         </nav>
         
@@ -174,7 +192,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function AdminLayout({ children }: { children: React.ReactNode }) {
+export function AdminLayout({ children }: { readonly children: React.ReactNode }) {
   return (
       <AdminLayoutContent>{children}</AdminLayoutContent>
   );

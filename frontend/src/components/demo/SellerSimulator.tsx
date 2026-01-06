@@ -70,7 +70,7 @@ export function SellerSimulator() {
        <div className="flex items-center justify-center gap-2 mb-8 px-2">
           {steps.map((step, index) => (
              <button 
-               key={index}
+               key={step.title}
                onClick={() => setActiveStep(index)}
                className={cn(
                  "flex items-center justify-center rounded-full transition-all duration-300 border-2",
@@ -155,16 +155,17 @@ export function SellerSimulator() {
                               <h3 className="text-base font-bold mb-3 flex items-center"><Store className="w-4 h-4 mr-2" /> Creează Taraba Ta</h3>
                               <div className="space-y-2">
                                   <div>
-                                      <label className="text-[10px] font-bold text-stone-500 uppercase">Nume Tarabă</label>
-                                      <input type="text" defaultValue="Bunătăți de la Bunica" className="w-full border-b border-stone-200 py-1 focus:border-fern outline-none font-serif text-sm font-bold bg-transparent" />
+                                      <label htmlFor="seller-stallname" className="text-[10px] font-bold text-stone-500 uppercase">Nume Tarabă</label>
+                                      <input id="seller-stallname" type="text" defaultValue="Bunătăți de la Bunica" className="w-full border-b border-stone-200 py-1 focus:border-fern outline-none font-serif text-sm font-bold bg-transparent" />
                                   </div>
                                   <div>
-                                      <label className="text-[10px] font-bold text-stone-500 uppercase">Descriere</label>
-                                      <textarea defaultValue="Produse naturale, crescute cu grijă." className="w-full border border-stone-200 p-2 rounded text-stone-600 h-10 text-[13px] resize-none focus:border-fern outline-none bg-stone-50"></textarea>
+                                      <label htmlFor="seller-description" className="text-[10px] font-bold text-stone-500 uppercase">Descriere</label>
+                                      <textarea id="seller-description" defaultValue="Produse naturale, crescute cu grijă." className="w-full border border-stone-200 p-2 rounded text-stone-600 h-10 text-[13px] resize-none focus:border-fern outline-none bg-stone-50"></textarea>
                                   </div>
                                   <div>
-                                      <label className="text-[10px] font-bold text-stone-500 uppercase">Locație</label>
+                                      <label htmlFor="seller-location" className="text-[10px] font-bold text-stone-500 uppercase">Locație</label>
                                       <input 
+                                        id="seller-location"
                                         type="text" 
                                         value={stallLocation}
                                         onChange={(e) => setStallLocation(e.target.value)}
@@ -194,7 +195,8 @@ export function SellerSimulator() {
                            <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm text-left">
                                <h3 className="text-lg font-bold mb-4 flex items-center"><Plus className="w-5 h-5 mr-2" /> Adaugă Produs</h3>
                                <div className="flex gap-4">
-                                   <div 
+                                   <button 
+                                     type="button"
                                      onClick={() => setProductImage("https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=80")}
                                      className={cn(
                                         "w-20 h-20 rounded-lg flex items-center justify-center border-2 border-dashed cursor-pointer transition-all overflow-hidden relative",
@@ -209,7 +211,7 @@ export function SellerSimulator() {
                                                <span className="text-[10px] text-stone-500 font-bold uppercase">Foto</span>
                                            </div>
                                        )}
-                                   </div>
+                                   </button>
                                    <div className="flex-grow space-y-2">
                                         <input 
                                             type="text" 
@@ -276,12 +278,12 @@ export function SellerSimulator() {
                                            <div className="font-bold text-stone-800 text-sm">Maria Popescu</div>
                                            <div className="text-[10px] text-stone-500">{stallLocation}, Centru</div>
                                        </div>
-                                       <div className="font-bold text-lg">{(parseFloat(productPrice || "0") * 2 + 5).toFixed(2)} RON</div>
+                                       <div className="font-bold text-lg">{(Number.parseFloat(productPrice || "0") * 2 + 5).toFixed(2)} RON</div>
                                    </div>
                                    <div className="bg-stone-50 p-2 rounded-lg text-xs mb-3">
                                        <div className="flex justify-between mb-1">
                                            <span>2kg x {productName}</span>
-                                           <span>{(parseFloat(productPrice || "0") * 2).toFixed(2)} RON</span>
+                                           <span>{(Number.parseFloat(productPrice || "0") * 2).toFixed(2)} RON</span>
                                        </div>
                                        <div className="flex justify-between text-stone-500">
                                            <span>1 x Legătură Pătrunjel</span>

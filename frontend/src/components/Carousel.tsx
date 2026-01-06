@@ -50,6 +50,14 @@ export function Carousel() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
 
+  // Helper function to calculate progress bar width (extracted from nested ternary)
+  const getProgressWidth = (index: number): string => {
+    if (index === current) {
+      return `${progress}%`;
+    }
+    return index < current ? '100%' : '0%';
+  };
+
   const next = useCallback(() => {
     setCurrent((p) => (p + 1) % slides.length);
     setProgress(0);
@@ -79,8 +87,12 @@ export function Carousel() {
   return (
     <div 
       className="relative w-full h-[600px] md:h-[700px] flex items-center justify-center overflow-hidden bg-black"
+      role="region"
+      aria-label="Carousel cu imagini promoționale"
       onMouseEnter={() => setIsPlaying(false)}
       onMouseLeave={() => setIsPlaying(true)}
+      onFocus={() => setIsPlaying(false)}
+      onBlur={() => setIsPlaying(true)}
     >
       {/* Background Images with Crossfade */}
       {slides.map((slide, index) => (
@@ -147,7 +159,7 @@ export function Carousel() {
                            <div 
                               className={`h-full transition-all duration-75 rounded-full ${slide.accent}`}
                               style={{ 
-                                width: index === current ? `${progress}%` : (index < current ? '100%' : '0%') 
+                                width: getProgressWidth(index) 
                               }}
                            ></div>
                        </div>
@@ -160,9 +172,13 @@ export function Carousel() {
                 <button onClick={prev} className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                     <ChevronLeft className="w-6 h-6" />
                 </button>
-                <div onClick={() => setIsPlaying(!isPlaying)} className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer">
+                <button 
+                  onClick={() => setIsPlaying(!isPlaying)} 
+                  className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label={isPlaying ? 'Pauză carousel' : 'Pornește carousel'}
+                >
                     {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                </div>
+                </button>
                 <button onClick={next} className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                     <ChevronRight className="w-6 h-6" />
                 </button>

@@ -9,7 +9,7 @@ export default function TermsPage() {
       
       <div className="container mx-auto px-6 py-12 max-w-4xl">
         <h1 className="text-4xl font-serif font-bold text-stone-800 mb-2">Termeni și Condiții</h1>
-        <p className="text-stone-500 mb-8">Ultima actualizare: {new Date().toLocaleDateString('ro-RO')}</p>
+        <p className="text-stone-500 mb-8">Ultima actualizare: 28 decembrie 2025</p>
 
         <div className="bg-white p-8 rounded-xl shadow-sm border border-stone-100 prose prose-stone max-w-none">
           

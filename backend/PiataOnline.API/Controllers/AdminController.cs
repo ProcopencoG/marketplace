@@ -409,6 +409,13 @@ public class AdminController : ControllerBase
         await _unitOfWork.Stalls.UpdateAsync(stall);
         await _unitOfWork.SaveChangesAsync();
 
+        // Notify stall owner
+        await CreateNotificationAsync(
+            stall.UserId,
+            "stall_approved",
+            new { text = $"Felicitări! Taraba ta \"{stall.Name}\" a fost aprobată și este acum activă.", stallId = stall.Id, stallName = stall.Name }
+        );
+
         return Ok(new { message = "Stall approved" });
     }
 
@@ -421,6 +428,13 @@ public class AdminController : ControllerBase
         stall.Status = PiataOnline.Core.Enums.StallStatus.Rejected;
         await _unitOfWork.Stalls.UpdateAsync(stall);
         await _unitOfWork.SaveChangesAsync();
+
+        // Notify stall owner
+        await CreateNotificationAsync(
+            stall.UserId,
+            "stall_rejected",
+            new { text = $"Din păcate, taraba ta \"{stall.Name}\" nu a fost aprobată. Te rugăm să verifici informațiile.", stallId = stall.Id, stallName = stall.Name }
+        );
 
         return Ok(new { message = "Stall rejected" });
     }
@@ -561,6 +575,27 @@ public class AdminController : ControllerBase
         _logger.LogInformation("User {Email} demoted from Admin by {AdminId}", user.Email, User.Identity?.Name);
 
         return Ok(new { message = "Admin rights revoked" });
+    }
+
+    private async Task CreateNotificationAsync(int recipientId, string type, object paramsObj)
+    {
+        try
+        {
+            var notification = new Notification
+            {
+                RecipientId = recipientId,
+                Type = type,
+                Params = System.Text.Json.JsonSerializer.Serialize(paramsObj),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await _unitOfWork.Notifications.AddAsync(notification);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to create notification for user {UserId}", recipientId);
+        }
     }
 }
 

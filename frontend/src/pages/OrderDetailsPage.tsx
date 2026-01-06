@@ -86,8 +86,7 @@ export default function OrderDetailsPage() {
       {
         received: (data: Message) => {
           setMessages(prev => {
-            // Avoid duplicates
-            if (prev.find(m => m.id === data.id)) return prev;
+            if (prev.some(m => m.id === data.id)) return prev;
             return [...prev, data];
           });
         }
@@ -271,8 +270,8 @@ export default function OrderDetailsPage() {
                               
                               <form onSubmit={handleReviewSubmit} className="space-y-4">
                                   <div>
-                                      <label className="block text-sm font-medium text-stone-700 mb-2">Notă (1-5)</label>
-                                      <div className="flex gap-2">
+                                      <label htmlFor="review-rating" className="block text-sm font-medium text-stone-700 mb-2">Notă (1-5)</label>
+                                      <div className="flex gap-2" id="review-rating">
                                           {[1, 2, 3, 4, 5].map((star) => (
                                               <button
                                                   key={star}
@@ -290,8 +289,9 @@ export default function OrderDetailsPage() {
                                   </div>
                                   
                                   <div>
-                                      <label className="block text-sm font-medium text-stone-700 mb-1">Comentariu (opțional)</label>
+                                      <label htmlFor="review-comment" className="block text-sm font-medium text-stone-700 mb-1">Comentariu (opțional)</label>
                                       <textarea
+                                          id="review-comment"
                                           value={reviewComment}
                                           onChange={(e) => setReviewComment(e.target.value)}
                                           placeholder="Spune-ne părerea ta..."

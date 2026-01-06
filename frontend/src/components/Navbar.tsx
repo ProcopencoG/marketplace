@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
 import { useState } from 'react';
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 import NotificationBell from './NotificationBell';
 import UserMenu from './UserMenu';
@@ -17,61 +17,18 @@ export function Navbar() {
 
   const googleLogin = useGoogleLogin({
       onSuccess: async (tokenResponse) => {
-          await loginWithGoogle(tokenResponse.access_token); // or id_token depending on flow, but useGoogleLogin returns access_token by default for implicit flow unless 'flow: auth-code'
-          // However, backend AuthController expects "idToken". 
-          // For 'implicit' flow (default), we get access_token. 
-          // To get id_token we might need flow: 'implicit' but standard is access_token.
-          // BUT, google-oauth/react useGoogleLogin returns TokenResponse { access_token, ... }
-          // If we want ID Token, we usually need <GoogleLogin /> or flow: 'auth-code' and exchange.
-          // Let's assume the backend verifies the token against Google.
-          // If the backend validates ID Token, we effectively need the ID Token.
-          // useGoogleLogin keys: onSuccess returns { access_token, ... }
-          // If we want ID token with custom button we might be stuck or need to fetch user info manually.
-          // Actually, let's verify what the backend expects.
-          // Backend: ValidateOAuthTokenAsync(provider, idToken).
-          // Google's /tokeninfo endpoint works with ID tokens OR Access Tokens usually, but 'GoogleJsonWebSignature.ValidateAsync' definitely needs ID Token.
-          // If backend uses Google.Apis.Auth, it validates ID Tokens.
-          // Thus, we likely need the ID Token.
-          // To get ID Token with custom button in @react-oauth/google, we can't easily.
-          // The <GoogleLogin /> component gives credential (ID Token).
-          // useGoogleLogin gives access_token.
-          // RE-READ DOCS MENTAL MODEL: useGoogleLogin can return codeResponse which can be exchanged, or implicit flow.
-          // To simply get an ID Token for backend validation, <GoogleLogin /> is preferred.
-          // BUT user wants custom button "Intra in cont".
-          // We can use invisible <GoogleLogin /> or switch to fetching user profile with access_token and sending that (less secure).
-          // OR, we can try to use access_token and have backend validate it via different endpoint.
-          // Current backend: `payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);`
-          // This strict requires ID Token.
-          // So useGoogleLogin is tricky unless we get ID token.
-          // Wait, 'useGoogleLogin' has no direct ID token option in implicit flow?
-          // Actually, if we use `flow: 'implicit'`, we receive access_token.
-          // Let's use <GoogleLogin> render prop? No, it doesn't have one anymore in new lib.
-          // Correct approach for custom button with ID TOKEN requirement:
-          // Just use the standard <GoogleLogin /> button but styled? No, it's iframe.
-          // Okay, if we MUST use custom button, we use 'implicit' flow to get access_token, 
-          // THEN call Google's userinfo endpoint from frontend to get ID? No.
-          // Better: Change backend to accept Access Token? No, complicated.
-          // Let's try to use the <GoogleLogin /> button but customize it? options are limited.
-          // WAIT! We can use `onSuccess` from `useGoogleLogin` and request `openid email profile` scopes.
-          // BUT `ValidateAsync` on backend requires the JWT ID Token signed by Google.
-          // `useGoogleLogin` does NOT return the ID Token.
-          // So we should use the official Google Button if we want ID Token (Credential).
-          // OR we use the trick: useGoogleLogin -> get access_token -> call https://www.googleapis.com/oauth2/v3/userinfo -> Backend trusts frontend? NO.
-          // Backend verification is Key.
-          // HACK/FIX: The older `react-google-login` gave `tokenId`. The new `@react-oauth/google` separates them.
-          // To get ID Token with custom UI is harder.
-          // Recommendation: Use the standard <GoogleLogin /> component in the navbar.
-          // It renders a "Sign in with Google" button.
-          // Let's try to fit it in.
+          await loginWithGoogle(tokenResponse.access_token);
       },
       onError: error => console.log('Login Failed:', error)
   });
-  
-  // Re-evaluating: The user wants "Intra in cont". usage of <GoogleLogin> might change UI.
-  // Let's attempt to use the wrapper but if it's ugly we might need to change backend validation to accept access_token using `Google.Apis.Oauth2.v2.UserinfoResource`.
-  // BUT I cannot change backend easily now (requires restart and C# code).
-  // Safest Path: Use <GoogleLogin /> component. It's reliable for ID Tokens.
-  
+
+  // Handle Google One Tap credential response (ID Token)
+  const handleOneTapSuccess = async (credentialResponse: CredentialResponse) => {
+    if (credentialResponse.credential) {
+      await loginWithGoogle(credentialResponse.credential);
+    }
+  };
+
   return (
     <nav className="bg-cream border-b border-stone-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,9 +68,30 @@ export function Navbar() {
              {user ? (
                <UserMenu />
              ) : (
-               <Button onClick={() => googleLogin()} variant="default" className="bg-fern hover:bg-fern/90 text-white">
-                  Intră în cont
-               </Button>
+               <>
+                 {/* Google One Tap prompt - shows automatically */}
+                 <div className="hidden">
+                   <GoogleLogin
+                     onSuccess={handleOneTapSuccess}
+                     onError={() => console.log('One Tap Failed')}
+                     useOneTap
+                     auto_select
+                   />
+                 </div>
+                 {/* Regular login button - fallback */}
+                 <button 
+                   onClick={() => googleLogin()}
+                   className="flex items-center gap-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 px-4 py-2 rounded-full font-medium shadow-sm transition-all hover:shadow"
+                 >
+                   <svg className="w-5 h-5" viewBox="0 0 24 24">
+                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                   </svg>
+                   Intră în cont
+                 </button>
+               </>
              )}
           </div>
           {/* ... Mobile ... */}
@@ -162,9 +140,18 @@ export function Navbar() {
                          </div>
                      </div>
                  ) : (
-                      <Button onClick={() => { googleLogin(); setMobileMenuOpen(false); }} className="w-full mt-2 bg-fern text-white">
-                          Intră în cont
-                      </Button>
+                      <button 
+                        onClick={() => { googleLogin(); setMobileMenuOpen(false); }}
+                        className="w-full mt-2 flex items-center justify-center gap-2 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 px-4 py-2.5 rounded-full font-medium shadow-sm"
+                      >
+                        <svg className="w-5 h-5" viewBox="0 0 24 24">
+                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Intră în cont
+                      </button>
                  )}
              </div>
           </div>

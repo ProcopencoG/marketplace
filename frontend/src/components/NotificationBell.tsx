@@ -57,7 +57,7 @@ export default function NotificationBell() {
 
   const getNotificationText = (n: Notification) => {
       // Use params.text if available (from our backend logic)
-      if (n.params && n.params.text) return n.params.text;
+      if (n.params?.text) return n.params.text;
       
       // Fallbacks
       if (n.type === 'new_order') return `Comandă nouă #${n.params.order_id}`;
@@ -105,16 +105,17 @@ export default function NotificationBell() {
               <div className="p-4 text-center text-gray-500 text-sm">Nu ai notificări recente</div>
             ) : (
               notifications.map((notification) => (
-                <div 
+                <button 
                   key={notification.id}
-                  onClick={() => !notification.read_at && handleMarkAsRead(notification.id)}
-                  className={`p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors ${!notification.read_at ? 'bg-green-50/50' : ''}`}
+                  type="button"
+                  onClick={() => notification.read_at === null && handleMarkAsRead(notification.id)}
+                  className={`w-full text-left p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors ${notification.read_at === null ? 'bg-green-50/50' : ''}`}
                 >
-                  <p className={`text-sm ${!notification.read_at ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${notification.read_at === null ? 'font-semibold text-gray-800' : 'text-gray-600'}`}>
                     {getNotificationText(notification)}
                   </p>
                   <span className="text-xs text-gray-400 mt-1 block">{notification.time_ago}</span>
-                </div>
+                </button>
               ))
             )}
           </div>

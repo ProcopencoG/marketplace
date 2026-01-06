@@ -10,15 +10,15 @@ export function InstallPrompt() {
 
   useEffect(() => {
     // Check if already installed (standalone mode)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    const isStandalone = globalThis.matchMedia('(display-mode: standalone)').matches || (globalThis.navigator as any).standalone;
     if (isStandalone) return;
 
     // Check if dismissed recently (e.g., in last 24 hours)
     const lastDismissed = localStorage.getItem('pwa_prompt_dismissed');
-    if (lastDismissed && Date.now() - parseInt(lastDismissed) < 86400000) return;
+    if (lastDismissed && Date.now() - Number.parseInt(lastDismissed, 10) < 86400000) return;
 
     // Detect OS
-    const userAgent = window.navigator.userAgent.toLowerCase();
+    const userAgent = globalThis.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     const isAndroidDevice = /android/.test(userAgent);
 
@@ -36,8 +36,8 @@ export function InstallPrompt() {
             setShowPrompt(true);
         };
 
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        globalThis.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        return () => globalThis.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     }
 
   }, []);

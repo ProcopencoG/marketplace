@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Play, 
   Store, 
@@ -13,45 +13,75 @@ import {
   Wallet,
   TrendingDown,
   Globe,
-  Settings,
-  ShieldCheck,
-  Zap
+  Settings
 } from 'lucide-react';
-import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 import { SellerSimulator } from '../components/demo/SellerSimulator';
 import { BuyerSimulator } from '../components/demo/BuyerSimulator';
+import { useAuth } from '../context/AuthContext';
+import { useGoogleLogin } from '@react-oauth/google';
 
 export default function DemoPage() {
+  const { user, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
   // FAQ State
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  // Google login for CTA
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      await loginWithGoogle(tokenResponse.access_token);
+      navigate('/seller/stall/new');
+    },
+    onError: error => console.log('Login Failed:', error)
+  });
+
+  // Smart CTA handler
+  const handleCtaClick = () => {
+    if (user) {
+      if (user.hasStall) {
+        navigate('/seller/dashboard');
+      } else {
+        navigate('/seller/stall/new');
+      }
+    } else {
+      googleLogin();
+    }
+  };
+
   const faqs = [
     {
+      id: 'faq-cost',
       question: "Cât costă să îmi deschid o tarabă?",
       answer: "Absolut nimic! Platforma este complet gratuită pentru vânzători. Nu percepem comisioane din vânzări și nu există taxe de abonament. Scopul nostru este să susținem producătorii locali."
     },
     {
+      id: 'faq-sustain',
       question: "Cum se susține platforma dacă totul este gratuit?",
       answer: "Toate funcționalitățile actuale sunt de bază și vor rămâne permanent gratuite. Pe viitor, vor apărea funcționalități premium opționale (contra cost) pentru cei care își vor dori instrumente avansate."
     },
     {
+      id: 'faq-payment',
       question: "Cum primesc banii pe comenzi?",
       answer: "Plata se face momentan exclusiv 'Ramburs' (cash la livrare/ridicare). Tu, ca vânzător, încasezi banii direct de la client atunci când îi predai produsele. Simplu și direct."
     },
     {
+      id: 'faq-company',
       question: "Trebuie să am firmă (SRL/PFA)?",
       answer: "Nu este obligatoriu din partea platformei, dar ești responsabil să respecți legislația în vigoare privind comerțul cu produse alimentare. Platforma conectează direct producătorii cu consumatorii."
     },
     {
+      id: 'faq-location',
       question: "Pot vinde oriunde în țară?",
       answer: "Sistemul este gândit momentan pentru comunități locale. Setezi orașul în care activezi, iar clienții te vor găsi dacă filtrează după acel oraș. Recomandăm livrarea personală sau ridicarea din locație."
     },
     {
+      id: 'faq-cancel',
       question: "Ce se întâmplă dacă nu pot onora o comandă?",
       answer: "Poți anula comanda din panoul de administrare, specificând un motiv. Clientul va fi notificat automat. Este important să menții o comunicare bună pentru a avea recenzii pozitive."
     },
      {
+      id: 'faq-dual',
       question: "Pot avea și cont de cumpărător?",
       answer: "Da! Același cont poate fi folosit atât pentru a vinde produse (prin Taraba ta), cât și pentru a cumpăra bunătăți de la alți producători locali."
     }
@@ -256,7 +286,7 @@ export default function DemoPage() {
               
               <div className="space-y-4">
                   {faqs.map((faq, index) => (
-                      <div key={index} className="border border-stone-200 rounded-xl overflow-hidden">
+                      <div key={faq.id} className="border border-stone-200 rounded-xl overflow-hidden">
                           <button 
                             onClick={() => setOpenFaq(openFaq === index ? null : index)}
                             className="w-full text-left p-4 md:p-6 flex justify-between items-center bg-stone-50 hover:bg-stone-100 transition-colors"
@@ -287,9 +317,12 @@ export default function DemoPage() {
               <h2 className="text-3xl font-serif font-bold mb-6">Gata să începi?</h2>
               <p className="text-green-100 mb-8 max-w-xl mx-auto">Nu te costă nimic să încerci. Alătură-te comunității de producători locali astăzi.</p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <a href="/auth/google_oauth2" className="bg-white text-fern hover:bg-stone-100 px-8 py-3 rounded-full font-bold shadow-lg transition-transform hover:scale-105">
-                      Deschide o Tarabă Acum
-                  </a>
+                  <button 
+                    onClick={handleCtaClick}
+                    className="bg-white text-fern hover:bg-stone-100 px-8 py-3 rounded-full font-bold shadow-lg transition-transform hover:scale-105"
+                  >
+                      {user?.hasStall ? 'Mergi la Taraba Ta' : 'Deschide o Tarabă Acum'}
+                  </button>
               </div>
           </div>
       </section>

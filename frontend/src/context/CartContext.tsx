@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect, useMemo, useCallback } from 'react';
 import type { CartItem, Product } from '../types';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
@@ -19,7 +19,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children }: { readonly children: ReactNode }) {
   const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [stallId, setStallId] = useState<number | null>(null);
@@ -245,7 +245,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     
     try {
         await axios.delete(`/api/carts/user/${user.id}/items/${itemId}`);
-        setItems(prev => prev.filter(i => (i as any).id !== itemId));
+        setItems(prev => prev.filter(i => i.id !== itemId));
         // If empty?
         if (items.length <= 1) setStallId(null); 
     } catch (e) { console.error(e); }
@@ -263,7 +263,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
      try {
          await axios.put(`/api/carts/user/${user.id}/items/${itemId}`, { quantity });
-         setItems(prev => prev.map(i => (i as any).id === itemId ? { ...i, quantity } : i));
+          setItems(prev => prev.map(i => i.id === itemId ? { ...i, quantity } : i));
      } catch (e) { console.error(e); }
   };
 
@@ -282,8 +282,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } catch(e) { console.error(e); }
   };
 
+  const contextValue = useMemo(() => ({
+    items,
+    stallId,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    total,
+    itemCount,
+    isLoading
+  }), [items, stallId, addItem, removeItem, updateQuantity, clearCart, total, itemCount, isLoading]);
+
   return (
-    <CartContext.Provider value={{ items, stallId, addItem, removeItem, updateQuantity, clearCart, total, itemCount, isLoading }}>
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );

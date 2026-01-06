@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface RomanianPatternProps {
-  className?: string;
+  readonly className?: string;
 }
 
 export function RomanianPattern({ className = "" }: RomanianPatternProps) {

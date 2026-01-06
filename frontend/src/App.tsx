@@ -3,6 +3,7 @@ import { RootLayout } from './layouts/RootLayout';
 import { AdminLayout } from './layouts/AdminLayout';
 import HomePage from './pages/HomePage';
 import TermsPage from './pages/TermsPage';
+import ContactPage from './pages/ContactPage';
 import HowItWorksPage from './pages/HowItWorksPage';
 import CartPage from './pages/CartPage';
 import OrdersPage from './pages/OrdersPage';
@@ -48,6 +49,7 @@ export default function App() {
             {/* Public Routes */}
             <Route path="/stalls/:id" element={<RootLayout><StallPage /></RootLayout>} />
             <Route path="/termeni" element={<RootLayout><TermsPage /></RootLayout>} />
+            <Route path="/contact" element={<RootLayout><ContactPage /></RootLayout>} />
             <Route path="/cum-functioneaza" element={<RootLayout><HowItWorksPage /></RootLayout>} />
             
             {/* Admin Routes */}

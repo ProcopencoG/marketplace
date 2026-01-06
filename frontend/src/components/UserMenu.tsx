@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut, User as UserIcon, Store, Package, ShoppingBag, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { LogOut, Store, ShoppingBag, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { useAuthStore } from '../stores/useAuthStore';
@@ -24,11 +24,12 @@ export default function UserMenu() {
         try {
           // If this succeeds, it means they HAVE a stall but the local state says NO
           const res = await axios.get('/api/seller/dashboard');
-          if (res.data && res.data.stall) {
+          if (res.data?.stall) {
             useAuthStore.getState().updateUser({ ...user, hasStall: true });
           }
-        } catch (err: any) {
+        } catch (err) {
           // 404 is expected if they truly don't have a stall
+          console.debug('Stall sync check failed (expected if no stall):', err);
         }
       }
     };

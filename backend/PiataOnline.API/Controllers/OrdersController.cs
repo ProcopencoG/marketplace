@@ -213,6 +213,13 @@ public class OrdersController : ControllerBase
             await _unitOfWork.Orders.AddAsync(order);
             await _unitOfWork.SaveChangesAsync();
 
+            // Create notification for seller
+            await CreateNotificationAsync(
+                stall.UserId,
+                "new_order",
+                new { text = $"Comandă nouă de {order.TotalPrice:F2} RON de la {user.Name}", orderId = order.Id, total = order.TotalPrice, buyerName = user.Name }
+            );
+
             _logger.LogInformation("Order {OrderId} created for user {UserId}", order.Id, userId);
 
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, MapToDto(order));
@@ -248,6 +255,15 @@ public class OrdersController : ControllerBase
 
             await _unitOfWork.Orders.UpdateAsync(order);
             await _unitOfWork.SaveChangesAsync();
+
+            // Create notification for buyer about status change
+            var stall = await _unitOfWork.Stalls.GetByIdAsync(order.StallId);
+            var statusText = GetStatusText(newStatus);
+            await CreateNotificationAsync(
+                order.UserId,
+                "order_status_changed",
+                new { text = $"Comanda ta de la {stall?.Name ?? "vânzător"} este acum: {statusText}", orderId = order.Id, status = newStatus.ToString(), stallName = stall?.Name }
+            );
 
             _logger.LogInformation("Order {OrderId} status updated to {Status}", id, newStatus);
 
@@ -376,6 +392,18 @@ public class OrdersController : ControllerBase
 
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
 
+            // Create notification for the other party
+            int recipientId = isBuyer ? (stall?.UserId ?? 0) : order.UserId;
+            if (recipientId > 0 && recipientId != userId)
+            {
+                var preview = request.Content.Length > 50 ? request.Content[..50] + "..." : request.Content;
+                await CreateNotificationAsync(
+                    recipientId,
+                    "new_message",
+                    new { text = $"Mesaj nou de la {user?.Name ?? "utilizator"}: {preview}", orderId = id, senderName = user?.Name }
+                );
+            }
+
             return Ok(new MessageDto
             {
                 Id = message.Id,
@@ -417,5 +445,39 @@ public class OrdersController : ControllerBase
             (OrderStatus.Confirmed, OrderStatus.Cancelled) => true,
             _ => false
         };
+    }
+
+    private static string GetStatusText(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.NewOrder => "Comandă nouă",
+            OrderStatus.Confirmed => "Confirmată",
+            OrderStatus.Completed => "Finalizată",
+            OrderStatus.Cancelled => "Anulată",
+            _ => status.ToString()
+        };
+    }
+
+    private async Task CreateNotificationAsync(int recipientId, string type, object paramsObj)
+    {
+        try
+        {
+            var notification = new Notification
+            {
+                RecipientId = recipientId,
+                Type = type,
+                Params = System.Text.Json.JsonSerializer.Serialize(paramsObj),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+            await _unitOfWork.Notifications.AddAsync(notification);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log but don't fail the main operation
+            _logger.LogWarning(ex, "Failed to create notification for user {UserId}", recipientId);
+        }
     }
 }

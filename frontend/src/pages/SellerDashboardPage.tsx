@@ -6,7 +6,7 @@ import { ProductForm } from '../components/ProductForm';
 import { StallForm } from '../components/StallForm';
 import { Plus, Edit, Trash2, Package, Eye, Settings, TrendingUp, ShoppingBag, DollarSign } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useAuthStore } from '../stores/useAuthStore';
@@ -25,7 +25,7 @@ interface DashboardData {
 
 export default function SellerDashboardPage() {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'settings'>('overview');
